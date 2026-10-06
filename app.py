@@ -147,7 +147,7 @@ def action_hint(name):
 def display_value(value, digits=3):
     return "-" if pd.isna(value) else f"{float(value):.{digits}f}"
 
-st.set_page_config(page_title="정제 OOS 조사·CAPA 대시보드", layout="wide")
+st.set_page_config(page_title="OOT 조사·CAPA 검토 대시보드", layout="wide")
 st.markdown("""
 <style>
 .block-container{padding-top:1.35rem;max-width:1500px}.small{font-size:.82rem;color:#64736c}div[data-testid="stSidebarNav"]{display:none}
@@ -374,7 +374,7 @@ def html_report(selected_label, analyses, qa_conclusion, reviewer, review_date, 
     cases_body += f"<h3>조사 우선순위 전체 목록</h3>{priority_html}"
     actions_body = process_html + cr.action_items_html(analyses, feature_label, record_hint, expanded=True) + f"<h3>CAPA 가정 조정 결과(시뮬레이션)</h3>{effect_html}"
 
-    return f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>PQR 경향분석 보고서</title>
+    return f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>OOT 조사·CAPA 검토 보고서</title>
 <style>body{{font-family:Arial,'Noto Sans KR',sans-serif;color:#18231f;max-width:1100px;margin:40px auto;line-height:1.55}}
 h1,h2{{color:{ACCENT}}}table{{width:100%;border-collapse:collapse;margin:10px 0 24px}}
 th,td{{border:1px solid #ccd7d2;padding:7px;text-align:center;font-size:12px}}th{{background:#edf5f2}}
@@ -422,7 +422,7 @@ li.candidate-chip .cc-var{{font-weight:700}}li.candidate-chip .cc-arrow{{color:{
 
 
 # --- 데이터 입력 및 결합 -------------------------------------------------
-st.sidebar.title("정제 OOS 조사·CAPA 대시보드")
+st.sidebar.title("OOT 조사·CAPA 검토 대시보드")
 with st.sidebar.expander("데이터 설정", expanded=False):
     use_uploaded = st.checkbox("다른 CSV 데이터 불러오기", value=False)
 use_builtin = not use_uploaded
@@ -460,7 +460,7 @@ st.sidebar.divider()
 st.sidebar.button("보고서 생성", on_click=_open_report)
 page = "5. 보고서 생성" if st.session_state.get("show_report") else selected_step
 
-st.title("정제 OOS 조사·CAPA 대시보드")
+st.title("OOT 조사·CAPA 검토 대시보드")
 
 options = ["전체 코드 비교"] + [f"코드 {c} · {counts.loc[c]}배치" for c in code_values]
 default_option = next((i for i, value in enumerate(options) if value.startswith("코드 17 ")), 0)
@@ -766,7 +766,7 @@ elif page.startswith("3."):
 
 # --- 5. 보고서 생성 ------------------------------------------------------
 else:
-    st.subheader("PQR 경향분석 보고서 생성")
+    st.subheader("OOT 조사·CAPA 검토 보고서 생성")
     reviewer = st.text_input("작성/검토자", placeholder="예: 홍길동 / QA")
     review_date = st.date_input("검토일")
     qa_conclusion = st.text_area("QA 종합결론", height=150, placeholder="예: 코드 17의 반복 MSPC 신호 배치에 대해 원자료와 설비로그 추가 검토가 필요함.")
@@ -792,7 +792,7 @@ else:
         selected_label, selected_analyses, qa_conclusion, reviewer, review_date,
         stored_summary, stored_details, active_cases, process_html,
     )
-    filename = f"PQR_trend_review_{'all' if len(selected_codes)>1 else selected_codes[0]}_{review_date}.html"
+    filename = f"OOT_CAPA_review_{'all' if len(selected_codes)>1 else selected_codes[0]}_{review_date}.html"
     st.download_button("HTML 보고서 내려받기", report.encode("utf-8"), file_name=filename, mime="text/html", type="primary")
     st.download_button("조사후보 CSV 내려받기", pd.concat([a.frame[a.frame['integrated_signal']].assign(code=a.code) for a in selected_analyses]).to_csv(index=False).encode("utf-8-sig"), file_name="investigation_candidates.csv", mime="text/csv")
     st.markdown("#### 보고서에 포함되는 내용")
